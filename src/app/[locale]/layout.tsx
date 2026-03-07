@@ -4,11 +4,6 @@ import { notFound } from "next/navigation";
 import { isValidLocale, locales } from "@/i18n/config";
 import "./globals.css";
 
-type Props = {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-};
-
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }

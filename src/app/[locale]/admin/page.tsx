@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
-import { fr } from "date-fns/locale";
+import { enUS, es, fr } from "date-fns/locale";
 import { BarChart3, CalendarDays, Home, Mail, MessageCircle } from "lucide-react";
 import {
   Booking,
@@ -16,6 +17,9 @@ import {
 } from "@/lib/local-data";
 
 export default function AdminPage() {
+  const params = useParams<{ locale: string }>();
+  const locale = params.locale === "es" || params.locale === "en" ? params.locale : "fr";
+  const dateLocale = locale === "es" ? es : locale === "en" ? enUS : fr;
   const [bookings] = useState<Booking[]>(() => {
     if (typeof window === "undefined") {
       return [];
@@ -71,7 +75,7 @@ export default function AdminPage() {
               <p className="mt-2 text-slate-600">Vue centralisee des reservations, contacts et questions FAQ.</p>
             </div>
             <Link
-              href="/"
+              href={`/${locale}`}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
             >
               <Home className="h-4 w-4" />
@@ -126,7 +130,9 @@ export default function AdminPage() {
                   <tr key={booking.id} className="border-b border-slate-100 text-slate-700">
                     <td className="px-3 py-3 font-medium text-slate-900">{booking.name}</td>
                     <td className="px-3 py-3">
-                      {format(parseISO(booking.date), "EEE d MMM", { locale: fr })}
+                      {format(parseISO(booking.date), locale === "en" ? "EEE, MMM d" : "EEE d MMM", {
+                        locale: dateLocale,
+                      })}
                     </td>
                     <td className="px-3 py-3">{booking.time}</td>
                     <td className="px-3 py-3">{booking.service}</td>
@@ -150,7 +156,9 @@ export default function AdminPage() {
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-semibold text-slate-900">{contact.name}</p>
                     <p className="text-xs text-slate-500">
-                      {format(new Date(contact.createdAt), "d MMM yyyy - HH:mm", { locale: fr })}
+                      {format(new Date(contact.createdAt), locale === "en" ? "MMM d yyyy - HH:mm" : "d MMM yyyy - HH:mm", {
+                        locale: dateLocale,
+                      })}
                     </p>
                   </div>
                   <p className="mt-1 text-sm text-slate-600">{contact.email}</p>

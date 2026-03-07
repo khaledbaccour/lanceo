@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { format, parseISO } from "date-fns";
-import { fr } from "date-fns/locale";
+import { enUS, es, fr } from "date-fns/locale";
 import { CalendarCheck2, Download, House } from "lucide-react";
 import { Booking, ensureMockData, getBookings } from "@/lib/local-data";
 
@@ -34,7 +34,9 @@ function createCalendarFile(booking: Booking): string {
 }
 
 export default function BookingConfirmationPage() {
-  const params = useParams<{ id: string }>();
+  const params = useParams<{ id: string; locale: string }>();
+  const locale = params.locale === "es" || params.locale === "en" ? params.locale : "fr";
+  const dateLocale = locale === "es" ? es : locale === "en" ? enUS : fr;
   const booking = useMemo(() => {
     if (typeof window === "undefined") {
       return null;
@@ -48,8 +50,10 @@ export default function BookingConfirmationPage() {
     if (!booking) {
       return "";
     }
-    return format(parseISO(booking.date), "EEEE d MMMM yyyy", { locale: fr });
-  }, [booking]);
+    return format(parseISO(booking.date), locale === "en" ? "EEEE, MMMM d yyyy" : "EEEE d MMMM yyyy", {
+      locale: dateLocale,
+    });
+  }, [booking, dateLocale, locale]);
 
   function downloadCalendar() {
     if (!booking) {
@@ -117,7 +121,7 @@ export default function BookingConfirmationPage() {
             Ajoute au calendrier
           </button>
           <Link
-            href="/"
+            href={`/${locale}`}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
           >
             <House className="h-4 w-4" />
