@@ -1,5 +1,10 @@
 import { LanceoSite } from "@/components/lanceo-site";
 
-export default function Home() {
-  return <LanceoSite />;
+type Props = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function Home({ params }: Props) {
+  const { locale } = await params;
+  return <LanceoSite locale={locale} />;
 }
